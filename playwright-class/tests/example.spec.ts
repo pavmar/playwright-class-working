@@ -2,7 +2,7 @@ import { test } from "../fixture";
 
 test.describe('@toolshop', () => {
 
-
+  test.use({storageState: ".auth/testinfo.json"});
   // test('Testing Website', async ({ homePage }) => {
   //   homePage.submitInfo();
   // });
