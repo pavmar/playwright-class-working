@@ -1,6 +1,7 @@
 import { Locator, Page, expect } from '@playwright/test';
 
 import { BasePage } from "../base-page";
+import { exit } from 'process';
 
 export class MainViewPage extends BasePage {
 
@@ -14,7 +15,7 @@ export class MainViewPage extends BasePage {
         console.log("TESt");
     }
     public async navigateToolShop() {
-        await this.page.goto('https://practicesoftwaretesting.com/');
+        await this.page.goto(process.env.BASEURL);
     }
 
     public async selectForgeFlexTool() {
@@ -46,15 +47,15 @@ export class MainViewPage extends BasePage {
       
     }
     public async homeButtonClick() {
-        await this.page.goto('https://practicesoftwaretesting.com/');
+        await this.page.goto(process.env.BASEURL);
         await this.page.locator('[data-test="nav-home"]').click();
-        await expect(this.page.locator('[data-test="product-01J9M92TGGV88YK1P5T2FSYMJW"]')).toBeVisible();
-        await expect(this.page.locator('[data-test="product-01J9M92TGKNVE6GR4A05QT2ZX7"]')).toBeVisible();
-        await expect(this.page.locator('[data-test="product-01J9M92TGPKNVM8F4CT9V5WC2Z"]')).toBeVisible();
+        await expect(this.page.getByAltText('Combination Pliers')).toBeVisible();
+        // await expect(this.page.locator('[data-test="product-01J9M92TGKNVE6GR4A05QT2ZX7"]')).toBeVisible();
+        // await expect(this.page.locator('[data-test="product-01J9M92TGPKNVM8F4CT9V5WC2Z"]')).toBeVisible();
     };
 
     public async clickCategories() {
-        await this.page.goto('https://practicesoftwaretesting.com/');
+        await this.page.goto(process.env.BASEURL);
         await this.page.locator('[data-test="nav-categories"]').click();
         await expect(this.page.locator('[data-test="nav-hand-tools"]')).toBeVisible();
         await expect(this.page.locator('[data-test="nav-power-tools"]')).toBeVisible();
@@ -64,7 +65,7 @@ export class MainViewPage extends BasePage {
     }
 
     public async clickContact(){
-        await this.page.goto('https://practicesoftwaretesting.com/');
+        await this.page.goto(process.env.BASEURL);
         await this.page.locator('[data-test="nav-contact"]').click();
         await expect(this.page.getByRole('heading', { name: 'Contact' })).toBeVisible();
         await expect(this.page.locator('form')).toBeVisible();
@@ -72,14 +73,14 @@ export class MainViewPage extends BasePage {
 
     public async clickSignin()
     {
-        await this.page.goto('https://practicesoftwaretesting.com/');
+        await this.page.goto(process.env.BASEURL);
         await this.page.locator('[data-test="nav-sign-in"]').click();
         await expect(this.page.getByRole('heading', { name: 'Login' })).toBeVisible();
         await expect(this.page.getByText('Login Sign in with Google or')).toBeVisible();
     }
 
     public async clickLang(){
-        await this.page.goto('https://practicesoftwaretesting.com/');
+        await this.page.goto(process.env.BASEURL);
         await this.page.locator('[data-test="language"]').click();
         await expect(this.page.getByText('DE', { exact: true })).toBeVisible();
         await expect(this.page.getByLabel('EN', { exact: true }).getByText('EN')).toBeVisible();
@@ -90,127 +91,346 @@ export class MainViewPage extends BasePage {
     }
     
     public async sortAZ() {
-        await this.page.goto('https://practicesoftwaretesting.com/');
+        await this.page.goto(process.env.BASEURL);
         await this.page.locator('[data-test="sort"]').selectOption('name,asc');
-        await expect(this.page.locator('[data-test="product-01J9M92THJS6Y249DMX3ERYPS8"]')).toBeVisible();
-        await expect(this.page.locator('[data-test="product-01J9M92THMFVB9W7HFSKSV551J"]')).toBeVisible();
-        await expect(this.page.locator('[data-test="product-01J9M92TKRE7FWWM2CTQQ8NXGH"]')).toBeVisible();
+
+        // Wait for the elements to be sorted
+        await this.page.waitForSelector('[data-test="sorting_completed"]'); // Adjust selector as necessary
+
+        // Get all elements after sorting
+        const elements = await this.page.$$('[data-test="product-name"]'); // Adjust selector as necessary
+        const texts = [];
+
+        // Extract text from each element
+        for (const element of elements) {
+            texts.push(await this.page.evaluate(el => el.textContent, element));
+        }
+        console.log(texts);
+
+        // Check if the texts are sorted alphabetically
+        const sortedTexts = [...texts].sort((a, b) => a.localeCompare(b));
+        const areSorted = texts.every((text, index) => text === sortedTexts[index]);
+
+        if (areSorted) {
+            console.log('Elements are sorted alphabetically');
+        } else {
+            throw new Error('Sorting failed. Elements are not in alphabetical order');
+        }
+
     }
 
     public async sortZA() {
-        await this.page.goto('https://practicesoftwaretesting.com/');
+        await this.page.goto(process.env.BASEURL);
         await this.page.locator('[data-test="sort"]').selectOption('name,desc');
-        await expect(this.page.locator('[data-test="product-01J9M92THFS3C2TCK4Q90RR6QR"]')).toBeVisible();
-        await expect(this.page.locator('[data-test="product-01J9M92THZQSSZ2Y8P4YAEM6ZC"]')).toBeVisible();
-        await expect(this.page.locator('[data-test="product-01J9M92TKA6JVMTRC4T8STE0G9"]')).toBeVisible();
+
+        // Wait for the elements to be sorted
+        await this.page.waitForSelector('[data-test="sorting_completed"]'); // Adjust selector as necessary
+
+        // Get all elements after sorting
+        const elements = await this.page.$$('[data-test="product-name"]'); // Adjust selector as necessary
+        const texts = [];
+
+        // Extract text from each element
+        for (const element of elements) {
+            texts.push(await this.page.evaluate(el => el.textContent, element));
+        }
+        console.log(texts);
+
+        // Check if the texts are sorted alphabetically
+        const sortedTexts = [...texts].sort((a, b) => b.localeCompare(a));
+        const areSorted = texts.every((text, index) => text === sortedTexts[index]);
+
+        if (areSorted) {
+            console.log('Elements are sorted alphabetically in Z-A');
+        } else {
+            throw new Error('Sorting failed. Elements are not sorted alphabetically in Z-A');
+        }
     }
 
     public async sortPriceHigh() {
-        await this.page.goto('https://practicesoftwaretesting.com/');
+        await this.page.goto(process.env.BASEURL);
         await this.page.locator('[data-test="sort"]').selectOption('price,desc');
-        await expect(this.page.locator('[data-test="product-01J9M92TKEJM2GSTR1A68Y8SQC"]')).toBeVisible();
-        await expect(this.page.locator('[data-test="product-01J9M92TKFEKD2NZXF4TG24Z6P"]')).toBeVisible();
-        await expect(this.page.locator('[data-test="product-01J9M92TKTNYTRS7H9M0F78RF0"]')).toBeVisible();
+
+        // Wait for the elements to be sorted
+        await this.page.waitForSelector('[data-test="sorting_completed"]'); // Adjust selector as necessary
+
+        // Get all elements after sorting
+        const elements = await this.page.$$('[data-test="product-price"]'); // Adjust selector as necessary
+        const texts = [];
+
+        // Extract text from each element
+        for (const element of elements) {
+            texts.push(await this.page.evaluate(el => el.textContent, element));
+        }
+        console.log(texts);
+
+        // Check if the texts are sorted alphabetically
+        const sortedTexts = [...texts].sort((a, b) => b.localeCompare(a));
+        const areSorted = texts.every((text, index) => text === sortedTexts[index]);
+
+        if (areSorted) {
+            console.log('Elements are sorted by price in descending order');
+        } else {
+            throw new Error('Sorting failed. Elements are not sorted by price in descending order');
+        }
     }
 
     public async sortPriceLow() {
-        await this.page.goto('https://practicesoftwaretesting.com/');
+        await this.page.goto(process.env.BASEURL);
         await this.page.locator('[data-test="sort"]').selectOption('price,asc');
-        await expect(this.page.locator('[data-test="product-01J9M92TKA6JVMTRC4T8STE0G9"]')).toBeVisible();
-        await expect(this.page.locator('[data-test="product-01J9M92TK6VYDP6WE1XEY16G18"]')).toBeVisible();
-        await expect(this.page.locator('[data-test="product-01J9M92TK8EGRN0ZT6X7N28A1E"]')).toBeVisible();
+
+        // Wait for the elements to be sorted
+        await this.page.waitForSelector('[data-test="sorting_completed"]'); // Adjust selector as necessary
+
+        // Get all elements after sorting
+        const elements = await this.page.$$('[data-test="product-price"]'); // Adjust selector as necessary
+        const texts = [];
+
+        // Extract text from each element
+        for (const element of elements) {
+            texts.push(await this.page.evaluate(el => el.textContent, element));
+        }
+        console.log(texts);
+
+        // Check if the texts are sorted alphabetically
+        const sortedTexts = [...texts].sort((a, b) => a.localeCompare(b));
+        const areSorted = texts.every((text, index) => text === sortedTexts[index]);
+
+        if (areSorted) {
+            console.log('Elements are sorted by price in ascendiong order');
+        } else {
+            throw new Error("Sorting failed. Elements are not sorter by price in ascendiong order");
+        }
     }
 
     public async searchPliers(){
-        await this.page.goto('https://practicesoftwaretesting.com/');
+        await this.page.goto(process.env.BASEURL);
         await this.page.locator('[data-test="search-query"]').click();
         await this.page.locator('[data-test="search-query"]').fill('pliers');
         await this.page.locator('[data-test="search-submit"]').click();
-        await expect(this.page.locator('[data-test="product-01J9M92TGGV88YK1P5T2FSYMJW"]')).toBeVisible();
-        await expect(this.page.locator('[data-test="product-01J9M92TGKNVE6GR4A05QT2ZX7"]')).toBeVisible();
-        await expect(this.page.locator('[data-test="product-01J9M92TGRVF1DJFNKGPWK3W41"]')).toBeVisible();
-        await expect(this.page.locator('[data-test="product-01J9M92TGXPYNR2C51B0Y50E8M"]')).toBeVisible();
+        //await this.page.getByLabel('Pliers').check();
+
+        await this.page.waitForSelector('[data-test="search_completed"]');
+
+        const elements = await this.page.$$('[data-test="product-name"]'); // Adjust selector as necessary
+        const texts = [];
+
+        // Extract text from each element
+        for (const element of elements) {
+            texts.push(await this.page.evaluate(el => el.textContent, element));
+        }
+        console.log(texts);
+
+        if (texts.length != process.env.PLIERS_SEARCH_COUNT)
+            throw new Error("Failed");
+
     }
 
     public async selectHandtools() {
-        await this.page.goto('https://practicesoftwaretesting.com/');
-        await this.page.locator('#filters').getByText('Hand Tools').click();
-        await expect(this.page.locator('[data-test="product-01J9MCGTBVAM2Z11MY3D9RJ9RF"]')).toBeVisible();
-        await this.page.getByText('«123»').click();
+        await this.page.goto(process.env.BASEURL);
+        await this.page.locator('#filters').getByText('Hand Tools').check();
+        await this.page.waitForSelector('[data-test="filter_completed"]');
+
+        const texts = [];
+
+        //await this.page.locator('[aria-label="Next"]').click();
+        let i = 0;
+        while (true) {
+            await this.page.waitForSelector('[data-test="filter_completed"]');
+            const elements = await this.page.$$('[data-test="product-name"]');
+
+            for (const element of elements) {
+                texts.push(await this.page.evaluate(el => el.textContent, element));
+            }
+    
+            if ( i >= 2)
+                break;
+            await this.page.click('[aria-label="Next"]')
+            await this.page.waitForTimeout(2000);
+            i++;
+        }
+        console.log(texts);
+        if (texts.length != process.env.HAND_TOOLS_COUNT)
+            throw new Error("Failed");
+
     }
 
     public async selectPowerTools(){
-        await this.page.goto('https://practicesoftwaretesting.com/');
-        await this.page.locator('#filters').getByText('Power Tools').click();
-        await expect(this.page.locator('[data-test="product-01J9MCGTF07WGGD5EDK89GR69G"]')).toBeVisible();
-        await expect(this.page.locator('[data-test="product-01J9MCGTF4B4XJV85MV3YBJAXF"]')).toBeVisible();
+        await this.page.goto(process.env.BASEURL);
+        await this.page.locator('#filters').getByText('Power Tools').check();
+        await this.page.waitForSelector('[data-test="filter_completed"]');
+
+        const elements = await this.page.$$('[data-test="product-name"]'); // Adjust selector as necessary
+        const texts = [];
+
+        // Extract text from each element
+        for (const element of elements) {
+            texts.push(await this.page.evaluate(el => el.textContent, element));
+        }
+        console.log(texts);
+
+        if (texts.length != process.env.POWER_TOOLS_COUNT )
+            throw new Error("Failed");
     }
 
     public async selectOther(){
-        await this.page.goto('https://practicesoftwaretesting.com/');
-        await this.page.locator('#filters').getByText('Other').click();
-        await expect(this.page.locator('[data-test="product-01J9MCGTDEMSXHK8TW124EM7CH"]')).toBeVisible();
-        await expect(this.page.locator('[data-test="product-01J9MCGTDY9K1VXXT3926A8KER"]')).toBeVisible();
-        await expect(this.page.getByText('«12»')).toBeVisible();
+        await this.page.goto(process.env.BASEURL);
+        await this.page.locator('#filters').getByText('Other').check();
+        await this.page.waitForSelector('[data-test="filter_completed"]');
+        
+        let elements = await this.page.$$('[data-test="product-name"]');
+
+        //await this.page.locator('[aria-label="Next"]').click();
+        await this.page.click('[aria-label="Next"]');
+        await this.page.waitForTimeout(3000);
+        await this.page.waitForSelector('[data-test="filter_completed"]');
+        
+        const elements2 = await this.page.$$('[data-test="product-name"]');
+
+        const texts = [];
+
+        // Extract text from each element
+        for (const element of elements) {
+            texts.push(await this.page.evaluate(el => el.textContent, element));
+        }
+        for (const element2 of elements2) {
+            texts.push(await this.page.evaluate(el => el.textContent, element2));
+        }
+        console.log(texts);
+        if (texts.length != process.env.OTHER_COUNT)
+            throw new Error("Failed");
     }
 
     public async selectHammer()
     {
-        await this.page.goto('https://practicesoftwaretesting.com/');
+        await this.page.goto(process.env.BASEURL);
         await this.page.locator('#filters').getByText('Hammer').click();
-        await expect(this.page.locator('[data-test="product-01J9MCGTC6JEMBNQVGMAN7HV6W"]')).toBeVisible();
-        await expect(this.page.locator('[data-test="product-01J9MCGTCGNMCAPQ49HCVHEWVD"]')).toBeVisible();
+        await this.page.waitForSelector('[data-test="filter_completed"]');
+        
+        const elements = await this.page.$$('[data-test="product-name"]');
+        const texts = [];
+
+        // Extract text from each element
+        for (const element of elements) {
+            texts.push(await this.page.evaluate(el => el.textContent, element));
+        }
+
+        console.log(texts);
+        if (texts.length != process.env.HAMMER_COUNT)
+            throw new Error("Failed");
+
     }
     public async selectHandSaw() {
-        await this.page.goto('https://practicesoftwaretesting.com/');
+        await this.page.goto(process.env.BASEURL);
         await this.page.getByText('Hand Saw').click();
-        await expect(this.page.locator('[data-test="product-01J9MCGTCKN9PBDNX5BA5WEWNX"]')).toBeVisible();
+        await this.page.waitForSelector('[data-test="filter_completed"]');
+        
+        const elements = await this.page.$$('[data-test="product-name"]');
+        const texts = [];
+
+        // Extract text from each element
+        for (const element of elements) {
+            texts.push(await this.page.evaluate(el => el.textContent, element));
+        }
+
+        console.log(texts);
+        if (texts.length != process.env.HAND_SAW_COUNT)
+            throw new Error("Failed");
 
     }
 
     public async selectWrench(){
-        await this.page.goto('https://practicesoftwaretesting.com/');
+        await this.page.goto(process.env.BASEURL);
         await this.page.locator('#filters').getByText('Wrench').click();
-        await expect(this.page.locator('[data-test="product-01J9MCGTCM7ZV59J3ZNPTARRZM"]')).toBeVisible();
-        await expect(this.page.locator('[data-test="product-01J9MCGTCNYHDWF4VPYS080R8K"]')).toBeVisible();
-        await expect(this.page.locator('[data-test="product-01J9MCGTCR8N7DH06ZESJD5ZK7"]')).toBeVisible();
+        await this.page.waitForSelector('[data-test="filter_completed"]');
+        
+        const elements = await this.page.$$('[data-test="product-name"]');
+        const texts = [];
+
+        // Extract text from each element
+        for (const element of elements) {
+            texts.push(await this.page.evaluate(el => el.textContent, element));
+        }
+
+        console.log(texts);
+        if (texts.length != process.env.WRENCH_COUNT)
+            throw new Error("Failed");
     }
 
     public async selectScrewDriver(){
-        await this.page.goto('https://practicesoftwaretesting.com/');
+        await this.page.goto(process.env.BASEURL);
         await this.page.locator('#filters').getByText('Screwdriver').click();
-        await expect(this.page.locator('[data-test="product-01J9MCGTCS9T0CH5DQ7ZAGKPHF"]')).toBeVisible();
-        await expect(this.page.locator('[data-test="product-01J9MCGTCVFH071C17SVB0FRNB"]')).toBeVisible();
+        await this.page.waitForSelector('[data-test="filter_completed"]');
+        
+        const elements = await this.page.$$('[data-test="product-name"]');
+        const texts = [];
+
+        // Extract text from each element
+        for (const element of elements) {
+            texts.push(await this.page.evaluate(el => el.textContent, element));
+        }
+
+        console.log(texts);
+        if (texts.length != process.env.SCREWDRIVER_COUNT)
+            throw new Error("Failed");
     }
 
     public async selectPliers() {
-        await this.page.goto('https://practicesoftwaretesting.com/');
+        await this.page.goto(process.env.BASEURL);
         await this.page.locator('#filters').getByText('Pliers').click();
-        await expect(this.page.locator('[data-test="product-01J9MCGTBVAM2Z11MY3D9RJ9RF"]')).toBeVisible();
-        await expect(this.page.locator('[data-test="product-01J9MCGTBZWS8V97705RDH3DGP"]')).toBeVisible();
-        await expect(this.page.locator('[data-test="product-01J9MCGTC42HPPZFVW5C3Z6MYD"]')).toBeVisible();
-        await expect(this.page.locator('[data-test="filter_completed"]')).toBeVisible();
+        await this.page.waitForSelector('[data-test="filter_completed"]');
+        
+        const elements = await this.page.$$('[data-test="product-name"]');
+        const texts = [];
+
+        // Extract text from each element
+        for (const element of elements) {
+            texts.push(await this.page.evaluate(el => el.textContent, element));
+        }
+
+        console.log(texts);
+        if (texts.length != process.env.PLIERS_COUNT)
+            throw new Error("Failed");
     }
 
     public async selectChisels() {
-        await this.page.goto('https://practicesoftwaretesting.com/');
+        await this.page.goto(process.env.BASEURL);
         await this.page.getByText('Chisels').click();
-        await expect(this.page.locator('[data-test="product-01J9MCGTCWJS2EZDHXYYFCQYKW"]')).toBeVisible();
-        await expect(this.page.locator('[data-test="product-01J9MCGTD1EQ61MM6CY8NGTF7R"]')).toBeVisible();
-        await expect(this.page.locator('[data-test="product-01J9MCGTD3Q9671SG76G6VCWZ3"]')).toBeVisible();
+        await this.page.waitForSelector('[data-test="filter_completed"]');
+        
+        const elements = await this.page.$$('[data-test="product-name"]');
+        const texts = [];
+
+        // Extract text from each element
+        for (const element of elements) {
+            texts.push(await this.page.evaluate(el => el.textContent, element));
+        }
+
+        console.log(texts);
+        if (texts.length != process.env.CHISELS_COUNT)
+            throw new Error("Failed");
     }
 
     public async selectMeasures() {
-        await this.page.goto('https://practicesoftwaretesting.com/');
+        await this.page.goto(process.env.BASEURL);
         await this.page.getByText('Measures').click();
-        await expect(this.page.locator('[data-test="product-01J9MCGTD80ZS9WMDANFJNKPXW"]')).toBeVisible();
-        await expect(this.page.locator('[data-test="product-01J9MCGTD9G2SGWAV731FJTTFS"]')).toBeVisible();
-        await expect(this.page.locator('[data-test="product-01J9MCGTDADB7YVZX0CZZTMMQG"]')).toBeVisible();
-        await expect(this.page.locator('[data-test="product-01J9MCGTDCA0GATNN38DAC7Z5M"]')).toBeVisible();
+        await this.page.waitForSelector('[data-test="filter_completed"]');
+        
+        const elements = await this.page.$$('[data-test="product-name"]');
+        const texts = [];
+
+        // Extract text from each element
+        for (const element of elements) {
+            texts.push(await this.page.evaluate(el => el.textContent, element));
+        }
+
+        console.log(texts);
+        if (texts.length != process.env.MEASURES_COUNT)
+            throw new Error("Failed");
     }
 
     public async navCaterogriesRentals() {
-        await this.page.goto('https://practicesoftwaretesting.com/');
+        await this.page.goto(process.env.BASEURL);
         await this.page.locator('[data-test="nav-categories"]').click();
         await this.page.locator('[data-test="nav-rentals"]').click();
         await expect(this.page.getByRole('img', { name: 'Excavator' })).toBeVisible();

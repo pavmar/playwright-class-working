@@ -3,6 +3,7 @@ import { defineConfig, devices } from '@playwright/test';
 import { getEnv } from './env';
 
 getEnv();
+process.env.ENV = "PRODUCTION"
 
 export default defineConfig({
   testDir: 'tests',
@@ -35,6 +36,20 @@ export default defineConfig({
 
   /* Configure projects for major browsers */
   projects: [
+    // {
+    //   name: 'setup',
+    //   use: { 
+    //     ...devices['Desktop Chrome'],
+    //     launchOptions: {
+    //       headless: false,
+    //       args: [
+    //         "--no-sandbox",
+    //       ],
+    //     },
+		//   //storageState: ".auth/logininfo.json"
+    //   },
+	  // testMatch: /.*\.setup\.ts/,
+    // },
     {
       name: 'chromium',
       use: { 
@@ -49,7 +64,7 @@ export default defineConfig({
           ],
         }
       },
-      dependencies: ["setup"],
+      //dependencies: ["setup"],
     },
 
     // {

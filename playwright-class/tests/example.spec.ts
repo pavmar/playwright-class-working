@@ -2,22 +2,7 @@ import { test } from "../fixture";
 
 test.describe('@toolshop', () => {
 
-  test.use({storageState: ".auth/testinfo.json"});
-  // test('Testing Website', async ({ homePage }) => {
-  //   homePage.submitInfo();
-  // });
-
-  // test('Testing Playwright',async ({ homePage }) => {
-  //   homePage.playwrightTest();
-  // });
-
-  // test('Verify ForeFlex Hammer List', { tag: ["@Hammer"] }, async ({ mainViewPage }) => {
-  //   await mainViewPage.verifyForgeFlexHammer()
-  // });
-
-  // test('Verify ForeFlex Wrench List', { tag: ["@Wrench"] }, async ({ mainViewPage }) => {
-  //   await mainViewPage.verifyForgeFlexWrench()
-  // });
+  test.use({storageState: ".auth/admin.json"});
 
   test('Verify Home button click', { tag: ["@home"] }, async ({ mainViewPage }) => {
     await mainViewPage.homeButtonClick()
