@@ -12,7 +12,7 @@ export class MainViewPage extends BasePage {
     private readonly email: Locator = this.page.locator('[name="email"]');
 
     public async foo() {
-        console.log("TESt");
+        console.log("TEST");
     }
     public async navigateToolShop() {
         await this.page.goto(process.env.BASEURL);

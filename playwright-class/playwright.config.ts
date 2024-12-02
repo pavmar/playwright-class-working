@@ -1,4 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
+import type { APIRequestOptions } from 'APIRequestFixture';
+
 
 import { getEnv } from './env';
 
@@ -30,26 +32,27 @@ export default defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on',
+    apiBaseURL: 'https://playwright.dev/',
 
     
   },
 
   /* Configure projects for major browsers */
   projects: [
-    // {
-    //   name: 'setup',
-    //   use: { 
-    //     ...devices['Desktop Chrome'],
-    //     launchOptions: {
-    //       headless: false,
-    //       args: [
-    //         "--no-sandbox",
-    //       ],
-    //     },
-		//   //storageState: ".auth/logininfo.json"
-    //   },
-	  // testMatch: /.*\.setup\.ts/,
-    // },
+    {
+      name: 'setup',
+      use: { 
+        ...devices['Desktop Chrome'],
+        launchOptions: {
+          headless: false,
+          args: [
+            "--no-sandbox",
+          ],
+        },
+		  //storageState: ".auth/logininfo.json"
+      },
+	  testMatch: /.*\.setup\.ts/,
+    },
     {
       name: 'chromium',
       use: { 
@@ -64,7 +67,7 @@ export default defineConfig({
           ],
         }
       },
-      //dependencies: ["setup"],
+      dependencies: ["setup"],
     },
 
     // {
