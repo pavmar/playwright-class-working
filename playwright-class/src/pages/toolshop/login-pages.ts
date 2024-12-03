@@ -74,7 +74,7 @@ export class LoginPageView extends BasePage {
 
         await this.page.locator('[data-test="country"]').clear();
         await this.page.locator('[data-test="country"]').pressSequentially('USA');
-        await expect(this.page.locator('[data-test="postcode"]')).toHaveValue('USA');
+        await expect(this.page.locator('[data-test="country"]')).toHaveValue('USA');
 
         await this.page.locator('[data-test="proceed-3"]').click();
         await expect(this.page.getByRole('heading', { name: 'Payment' })).toBeVisible();
